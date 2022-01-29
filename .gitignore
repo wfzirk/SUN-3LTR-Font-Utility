@@ -1,0 +1,12 @@
+
+*.pyc
+config.json
+Log/*
+Dist/*
+Svg/*
+*.log
+*.dbg
+*.err
+*.svg
+tmp.pnm
+
