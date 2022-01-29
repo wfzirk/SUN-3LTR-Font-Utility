@@ -7,6 +7,5 @@ Svg/*
 *.log
 *.dbg
 *.err
-*.svg
 tmp.pnm
 
