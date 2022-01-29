@@ -3,6 +3,12 @@ rem https://www.bing.com/search?q=administrative+language+setting+win+10&form=WN
 
 Setlocal EnableDelayedExpansion
 set debugecho=off
+
+if not exist Dist mkdir Dist
+if not exist Log mkdir Log
+if not exist Svg mkdir Svg
+
+
 call doEnv.bat
 
 set engalias=%alias%
