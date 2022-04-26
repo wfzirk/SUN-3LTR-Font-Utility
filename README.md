@@ -164,4 +164,16 @@ bfZip.py – Packages the distribution files  into a zip file.
 bfdoall.py – This is a dialog for easily setting up the doEnv.bat file for use by the 	doall.bat file.  Optionally it will run any or all the scripts.
 
 bfmain.py – This can replace the doall.bat file for manual running.  It makes 	debugging and viewing of run results in a friendlier manner than the text files.
-	It will modify the doEnv.bat and config.json files.  This is executed by 	calling bf.bat
+	It will modify the doEnv.bat and config.json files.  This is executed by calling bf.bat
+
+Diagnostics
+
+There are several diagnostic files generated to show mismatches and missing unicodes and words.
+
+name_has_spaces.txt - This file will list words that have spaces and can not be in the list
+
+name_not_used.txt -	This is a word in the primary dictionary not in the language dictionary
+
+not_in_primary.txt – This is a word in the language dictionary not in the primary dictionary
+
+unicode_mismatch - This lists words that have different unicodes between the English dictionary vs the language dictionary
