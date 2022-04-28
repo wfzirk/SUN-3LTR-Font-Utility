@@ -59,8 +59,13 @@ def listGlyphs(font, refList):
     for glyph in font:
         gl = [None, None, None, None]
         try:
-            if font[glyph].unicode != -1:
+            if font[glyph].unicode > 57343:
+                #if font[glyph].unicode < 57344:    # incase bad characters
+                #    continue
+            
                 unicode = hex(font[glyph].unicode)[2:]
+                logging.info("|%s| %s %s",font[glyph].unicode, font[glyph].glyphname, unicode)
+                
                 if len(unicode) < 4:
                     continue;
                 uic = getUnicode(unicode)
