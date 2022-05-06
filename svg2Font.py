@@ -195,7 +195,7 @@ def read_list(font, csvFile, alias, namelist=""):
                         continue
                 #log_info(row[ixn], row[ixu], row[ixEN], ncol) 
                 unicode = row[ixu].lower()
-                name = row[ixn].strip() 
+                name = row[ixn].strip().replace(" ","_")
                 addFont(font, unicode, alias, name)   #, float(mn), float(mx))
 
     except Exception as  e:

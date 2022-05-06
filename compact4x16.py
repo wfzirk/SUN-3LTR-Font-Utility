@@ -67,7 +67,7 @@ def read_csv_data(path):
         return 1, ""
 
 def createCell(row):
-    name = row[NAMEPOS]
+    name = row[NAMEPOS].replace(" ","_")
     uec = row[UECPOS]
     image = row[IMAGEPOS]
     line = name+'\n('+uec+')'    #,'+syn;

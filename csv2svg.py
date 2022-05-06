@@ -100,7 +100,8 @@ def read_list(fontname, csvFile, namelist=""):
                 logging.info(row)
                 logging.debug('%s %s',row[ixn],row[ixu])
                 ncol = len(row)
-                name = row[ixn].strip()
+                name = row[ixn].strip().replace(" ","_")
+                
                 unicode = row[ixu].strip().lower()
                 if len(name) == 0:
                     continue

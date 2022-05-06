@@ -39,8 +39,6 @@ echo "shouldn't be here"
 goto end
 
 :all
-
-
 :csv2kmn
 	@echo on
 	::cmd /c fontforge -quiet -script csv2kmn.py dist/pw%ver%_%alias%.csv %ver% %alias%  dist\sun%ver%_%alias%.kmn

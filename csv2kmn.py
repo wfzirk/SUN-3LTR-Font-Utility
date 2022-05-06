@@ -84,7 +84,7 @@ def read_csv(f):
                 if len(name) == 0:
                     errStr = f"---Name Error---, name is missing ({unicode})"
                     #logging.error("---Name Error---, name contains spaces, %s (%s)", name, unicode)
-                    logging.error(errStr)
+                    logging.warning(errStr)
                     file_missing.write(errStr+'\n')
                     continue
                 ref = i[ixr].strip()
@@ -95,7 +95,7 @@ def read_csv(f):
                     #nameError = True
                     errStr = f"---Name Error---, name contains spaces, {name}, ({unicode})"
                     #logging.error("---Name Error---, name contains spaces, %s (%s)", name, unicode)
-                    logging.error(errStr)
+                    logging.warning(errStr)
                     file_spc.write(errStr+'\n')
                     name = name.replace(" ","_")
                     
@@ -179,12 +179,11 @@ def main(*ffargs):
             altData = ""
             if altDict:
                 altData = read_csv(altDict)
-                if altData:    
-                    name = outFile.split('.')[0]
-                    hdr = get_header(name)
-                    rc = write_kmn(hdr, csvData, altData, outFile)
-                else:
-                    rc = 1
+  
+            name = outFile.split('.')[0]
+            hdr = get_header(name)
+            rc = write_kmn(hdr, csvData, altData, outFile)
+
         else:
             rc = 1
 
