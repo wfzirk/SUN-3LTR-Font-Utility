@@ -11,7 +11,8 @@ def log_setup(file, level=logging.INFO):
     name = "Log/"+os.path.basename(file)
     
     #should_roll_over = name
-    log_handler = logging.handlers.RotatingFileHandler(name, mode='a', backupCount=5 )
+    #log_handler = logging.handlers.RotatingFileHandler(name, mode='a', backupCount=1 )
+    log_handler = logging.FileHandler(name, mode='w')
     #if should_roll_over:  # log already exists, roll over!
     #    log_handler.doRollover()
 

@@ -26,6 +26,8 @@ cfg = {
     "csv2kmnFile": "",
     "compactFile": "",
     "zipFile": "",
+    "langAltFile": "",
+    "langAltCsv": "",
     "synxref":"",
     "readMe":"",
     "sunFontName": "",
@@ -48,7 +50,16 @@ langParms = {\
 def updateCfg(cfg):
     #print('updatecfg',cfg["alias"], cfg["version"])
     cfg["pwFile"] = cfg["filePath"]+"pw"+cfg["version"]+"_ENG.csv"                      # this file must be the english base file
-    cfg["pwLangFile"] = cfg["filePath"]+"pw"+cfg["version"]+"_"+cfg["alias"]+".csv"
+    #cfg["pwLangFile"] = cfg["filePath"]+"pw"+cfg["version"]+"_"+cfg["alias"]+".csv"
+    basename = os.path.basename(cfg["trlangFile"])
+    trlbase = basename.split('.')[0]+'.csv'
+    if cfg["langAltFile"]:
+        basename = os.path.basename(cfg["langAltFile"])
+        altbase = basename.split('.')[0]+'.csv'
+        cfg["langAltCsv"] = cfg["filePath"]+altbase
+    else:
+        cfg["langAltCsv"] = ""
+    cfg["pwLangFile"] = cfg["filePath"]+trlbase
     cfg["backFont"] = cfg["filePath"]+"SUNBF"+cfg["version"]+"_"+cfg["alias"]      
     cfg["kmncsv"] = cfg["filePath"]+"kmn"+cfg["version"]+"_ENG.csv"                 # this file must be the english base file
     cfg["altcsv"] = cfg["filePath"]+"alt"+cfg["version"]+"_ENG.csv"                 # this file must be the english base file
@@ -125,8 +136,9 @@ def writeBat(cfg):
         +"set ver="+cfg["version"]+"\n"\
         +"set ttffont="+cfg["ttf"]+"\n"\
         +"set alias="+cfg["alias"]+"\n"\
-        +'set langIn="'+cfg["trlangFile"]+'"\n'\
-        +"set langOut=SUNBF"+cfg["version"]+"_"+cfg["alias"]+".sfd"
+        +"set langaltin="+cfg["langAltFile"]+"\n"\
+        +"set langin="+cfg["trlangFile"]+"\n"\
+        +"set langout=SUNBF"+cfg["version"]+"_"+cfg["alias"]+".sfd"
 
     f = open('doEnv.bat', 'w')
     f.write(batEnv) 

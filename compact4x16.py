@@ -22,7 +22,7 @@ import csv
 import xlsxwriter
 import logging
 from bfLog import log_setup
-from util import  convert2ods, convert2pdf
+from util import  convert2ods, convert2pdf, convert2csv, convertfiletype 
 from bfConfig import readCfg, bfVersion
 import loadFont
 import time
@@ -182,7 +182,21 @@ def arry2xlsx(ary, outFile):
     #    os.remove(fods)
     lf.stop()
     del lf
-    
+  
+def xconvertfiletype(filename):
+    lExt = filename.split(".")[1]
+    if lExt == 'csv':
+        lcsvFile = filename
+    elif lExt == 'ods':
+        lcsvFile = convert2csv(filename, 'input')
+    elif lExt == 'xlsx':
+        lcsvFile = convert2csv(filename, 'input')
+    else:
+        logging.exception('Wrong type of File only csv, xlsx or ods files accepted')
+        lcsvFile = ""
+    return lcsvFile
+
+  
 def main(*ffargs):  
     lgh = log_setup('Log/'+__file__[:-3]+'.log') 
     logging.info('version %s', bfVersion)
@@ -193,7 +207,7 @@ def main(*ffargs):
         args.append(a)
 
     if len(args) ==3: 
-        csv_file = args[1]
+        csv_file = convertfiletype(args[1])
         outFile = args[2]
         rc, csv_data = read_csv_data(csv_file)
         logging.debug('read_csv %d %d',rc, len(csv_data))

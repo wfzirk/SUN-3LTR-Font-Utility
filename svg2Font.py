@@ -16,7 +16,7 @@ import os.path
 import logging
 from bfLog import log_setup
 from bfConfig import readCfg, bfVersion
- 
+from util import convert2csv 
 
 ffMetrics = {}  # font metrics taken from font
 
@@ -181,9 +181,8 @@ def read_list(font, csvFile, alias, namelist=""):
         with open(csvFile, encoding='utf8') as csvDataFile:
             csvReader = csv.reader(csvDataFile, delimiter=',', quotechar ='"') 
             for row in csvReader:
-                #log_info(len(row), row)
-                #time.sleep(0)       # allow time for caller to read output
                 if (len(row) < 3) or (len(row[ixu])) != 4: 
+                    logging.info('row wrong length row len %s  unicode len %s',len(row),len(row[ixu]))
                     continue
                 ncol = len(row)
                 unicode = row[ixu].lower()
@@ -218,6 +217,18 @@ def getMetrics(ttfFile, ttfFont):
     #log_info('ffmetrics ascent= %s descent= %s xHeight= %s'%(v['ascender'], v['descender'], v['xheight']))
     logging.info('ffmetrics ascent= %s descent= %s xHeight= %s'%(v['ascender'], v['descender'], v['xheight']))
 
+def convertfiletype(filename):
+    lExt = filename.split(".")[1]
+    if lExt == 'csv':
+        lcsvFile = filename
+    elif lExt == 'ods':
+        lcsvFile = convert2csv(filename, 'input')
+    elif lExt == 'xlsx':
+        lcsvFile = convert2csv(filename, 'input')
+    else:
+        logging.exception('Wrong type of File only csv, xlsx or ods files accepted')
+        lcsvFile = ""
+    return lcsvFile
 
 def main(*ffargs):
     lgh = log_setup('Log/'+__file__[:-3]+'.log') 
@@ -230,11 +241,12 @@ def main(*ffargs):
     rc = 0
     if len(args) > 4: 
         try:
-            csvFile = args[1]
+            csvFile = convertfiletype(args[1])
             ttfFile = args[2]
             alias = args[3].upper()
             #backFont = args[4].split('.')[0]
-            backFont = args[4][:-4]+'_'+alias
+            #backFont = args[4][:-4]+'_'+alias
+            backFont = args[4]
             logging.info('arg4 %s',backFont)
             #ttfFont = fontforge.open(ttfFile) 
             ttfFont = ff.open(ttfFile)

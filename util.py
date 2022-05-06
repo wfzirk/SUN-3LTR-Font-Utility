@@ -12,6 +12,7 @@ from datetime import timedelta
 import logging
 #from bfLog import log_setup
 
+
 start_time = ""
 def runTime(t = 'start'):
     global start_time
@@ -52,6 +53,29 @@ def getUnicode(str):
 def unicode2hex(uic): 
     #print(hex(ord(uic)))
     return(hex(ord(uic)))
+   
+def convertfiletype(filename):
+    lExt = filename.split(".")[1]
+    if lExt == 'csv':
+       
+        cmd = filename+' dist'
+        cmd = cmd.replace('/', '\\')
+        cmd = 'copy /y '+cmd
+        rc = os.system(cmd)
+        lcsvFile = 'dist/'+os.path.basename(filename)
+        logging.info('copyfile %d %s ',rc, cmd)
+
+    elif lExt == 'ods':
+        lcsvFile = convert2csv(filename, 'dist')
+        lcsvFile = 'dist/'+os.path.basename(lcsvFile)
+    elif lExt == 'xlsx':
+        lcsvFile = convert2csv(filename, 'dist')
+        lcsvFile = 'dist/'+os.path.basename(lcsvFile)
+    else:
+        logging.exception('Wrong type of File only csv, xlsx or ods files accepted')
+        lcsvFile = ""
+    logging.info('convertfiletype %s ', lcsvFile)
+    return lcsvFile
    
 def convert2text(filename, outdir=""):
     # https://stackoverflow.com/questions/24704536/how-do-i-convert-doc-files-to-txt-using-libreoffice-from-the-command-line
@@ -94,7 +118,7 @@ def convert2csv(filename, outdir=""):
         logging.exception("fatal error convert2csv %s %s %s", result, filename,e)
         #traceback.print_exc()
         return(1)
-    csvFile = filename[:-4]+'.csv'
+    csvFile = filename.split(".")[0]+".csv"
     return csvFile
         
 
@@ -114,7 +138,8 @@ def convert2ods(filename, outdir=""):
         logging.exception("fatal error convert2ods %s %s %s",result,filename,e)
         #traceback.print_exc()
         return(1)
-    odsFile = filename[:-4]+'.ods'
+    #odsFile = filename[:-4]+'.ods'
+    odsFile = filename.split(".")[0]+".ods"
     return odsFile
 
 # https://stackoverflow.com/questions/30349542/command-libreoffice-headless-convert-to-pdf-test-docx-outdir-pdf-is-not	
@@ -139,7 +164,8 @@ def convert2pdf(filename, outdir=""):
         logging.exception("fatal error convert2pdf %s %s %s", result, filename,e)
         #traceback.print_exc()
         return(1)
-    pdfFile = filename[:-4]+'.pdf'
+    #pdfFile = filename[:-4]+'.pdf'
+    pdfFile = filename.split(".")[0]+".pdf"
     return pdfFile
 
 def convert2odt(filename, outdir=""):	
@@ -163,6 +189,7 @@ def convert2odt(filename, outdir=""):
         logging.exception("fatal error convert2odt %s %s %s", result, filename,e)
         #traceback.print_exc()
         return(1)
-    odtFile = filename[:-4]+'.odt'
+    #odtFile = filename[:-4]+'.odt'
+    odtFile = filename.split(".")[0]+".odt"
     return odtFile
     

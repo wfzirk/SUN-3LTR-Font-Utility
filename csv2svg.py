@@ -15,6 +15,7 @@ import glob
 import logging
 from bfLog import log_setup
 from bfConfig import readCfg, bfVersion
+from util import convert2csv, convertfiletype 
  
 cnt = 0
 #imagemagic command  = 'convert -font Arial -pointsize 72 caption:%inp4% oxl.pnm'
@@ -126,7 +127,19 @@ def read_list(fontname, csvFile, namelist=""):
         return(3)
         
     return status
-                
+     
+def xconvertfiletype(filename):
+    lExt = filename.split(".")[1]
+    if lExt == 'csv':
+        lcsvFile = filename
+    elif lExt == 'ods':
+        lcsvFile = convert2csv(filename, 'input')
+    elif lExt == 'xlsx':
+        lcsvFile = convert2csv(filename, 'input')
+    else:
+        logging.exception('Wrong type of File only csv, xlsx or ods files accepted  %s',filename)
+        lcsvFile = ""
+    return lcsvFile
 
 def main(*ffargs):   
     lgh = log_setup('Log/'+__file__[:-3]+'.log') 
@@ -139,10 +152,8 @@ def main(*ffargs):
         
 
     if len(args) > 2: 
-        csvFile = args[1]
-        #alias = sys.argv[2].upper().strip()
+        csvFile = convertfiletype(args[1])
         ttfFont = args[2].lower()
-        #cg = getConfig('langinfo', language)
         namelist = ""
         if len(args) > 3:
             index = 0

@@ -5,10 +5,10 @@ import os
 import sys
 import csv
 #import traceback
-from util import getUnicode
+from util import getUnicode, convert2csv, convertfiletype 
 import logging
 from bfLog import log_setup
-from bfConfig import readCfg, bfVersion  
+from bfConfig import readCfg, bfVersion 
  
 def read_csv(namelist, outfile):
     try:
@@ -23,7 +23,10 @@ def read_csv(namelist, outfile):
         fw = open(outfile, 'w' , encoding='utf8')
         csvReader = csv.reader(fr, delimiter=',')
         for row in csvReader:
-            logging.debug(row);
+            logging.info(row);
+            if (len(row) < 3) or (len(row[ixu])) != 4: 
+                    logging.info('row wrong length row len %s  unicode len %s',len(row),len(row[ixu]))
+                    continue
             uic = row[ixu].strip()
             if uic != "":
                 unicode = getUnicode(uic)
@@ -35,6 +38,19 @@ def read_csv(namelist, outfile):
         logging.exception('exception %s',e)
         #traceback.print_exc()
         return(1)
+     
+def xconvertfiletype(filename):
+    lExt = filename.split(".")[1]
+    if lExt == '.csv':
+        lcsvFile = filename
+    elif lExt == 'ods':
+        lcsvFile = convert2csv(filename, 'input')
+    elif lExt == 'xlsx':
+        lcsvFile = convert2csv(filename, 'input')
+    else:
+        logging.exception('Wrong type of File only csv, xlsx or ods files accepted')
+        lcsvFile = ""
+    return lcsvFile
  
 def main(*ffargs):  
     lgh = log_setup('Log/'+__file__[:-3]+'.log') 
@@ -45,11 +61,9 @@ def main(*ffargs):
         logging.debug(a)
         args.append(a)
 
-
- 
     if len(args) == 3: 
-        infile = args[1]
-        outfile = args[2][:-4]+'.txt'
+        infile = convertfiletype(args[1])
+        outfile = args[2]
         
     else:
         logging.warning("\nsyntax: fontforge -script back2doc.py output.txt")

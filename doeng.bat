@@ -2,8 +2,8 @@ rem must change system language locale to utf-8
 rem https://www.bing.com/search?q=administrative+language+setting+win+10&form=WNSGPH&qs=AS&cvid=7b4667c3e2804c078bbfa20f11d7eb9f&pq=administrative+language+s&cc=US&setlang=en-US&nclid=5DAC70C3F9718B3FD01438C3459AFE25&ts=1581894742795&wsso=Moderate
 
 Setlocal EnableDelayedExpansion
-set debugecho=off
 
+@echo off
 if not exist Dist mkdir Dist
 if not exist Log mkdir Log
 if not exist Svg mkdir Svg
@@ -16,24 +16,30 @@ if %alias% == EN set engalias=EN
 if %alias% == eng set engalias=EN
 if %alias% == ENG set engalias=EN
 
-echo set
+@echo %set%
+if NOT %engalias% == EN (
+	@echo on 
+	@echo "This batch file is for English only runs"
+	@echo off
+	goto end
+)           
 
 :doit
 
 if %1.== all (goto dolang)
 
 set docmd=%1
-echo docmd set
+@echo docmd set
 goto %docmd%
 
-echo on
-echo %debugecho%
+@echo on
+
 
 
 :dolang
 
 if %docmd% == all (goto backfont) else (goto %docmd%)
-echo "shouldn't be here"
+@echo "shouldn't be here"
 goto end
 
 :all
@@ -81,7 +87,8 @@ if %docmd%  NEQ all (goto end)
 :csv2kmn
 if NOT %engalias% == EN (
 	@echo on
-	cmd /c fontforge -quiet -script csv2kmn.py dist/pw%ver%_%alias%.csv %ver% %alias%  dist\sun%ver%_%alias%.kmn
+	::cmd /c fontforge -quiet -script csv2kmn.py dist/pw%ver%_%alias%.csv %ver% %alias%  dist\sun%ver%_%alias%.kmn
+	cmd /c fontforge -quiet -script csv2kmn.py %langin% %langaltin%  dist\alt%ver%_%alias%.kmn
 	@echo off
 	if ERRORLEVEL 1 (goto errorexit)
 )
@@ -134,9 +141,6 @@ goto end
 @echo off
 goto end
 
-rem zipit.bat
-rem start /i /b /wait python -c "import util; util.printhi('someInput')"
-rem cmd /c python -c "import util; util.zipdir("", %ver%)
 :end
 
 @echo Done

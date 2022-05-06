@@ -3,7 +3,7 @@ import os
 import sys
 import csv
 #import traceback
-from util import convert2csv, unicode2hex
+from util import convert2csv, unicode2hex, convertfiletype 
 from array2xlsx import array2xlsx
 from bfConfig import readCfg, bfVersion
 import logging
@@ -214,11 +214,14 @@ def main(*ffargs):
         logging.info('langFile %s', langFile)
         logging.info('pwLangFile %s',pwLangFile)
         try:
-            lExt = langFile[-3:].strip().lower()   
-            logging.debug('ext %s','|'+lExt+'|')
+            #lExt = langFile[-4:].strip().lower().replace(".","") # pickup 4 letter extension
+            lExt = langFile.split(".")[1]
+            print(lExt)
             if lExt == '.csv':
                 lcsvFile = langFile
             elif lExt == 'ods':
+                lcsvFile = convert2csv(langFile, 'dist')
+            elif lExt == 'xlsx':
                 lcsvFile = convert2csv(langFile, 'dist')
             else:
                 logging.exception('Wrong type of File only csv or ods files accepted')

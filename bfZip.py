@@ -1,6 +1,7 @@
 import sys
 from zipfile import ZipFile 
 import os 
+import os.path
 import csv
 from bfConfig import readCfg, bfVersion
 from util import convert2text, convert2odt
@@ -41,18 +42,28 @@ def createFileList(cfg):
         fileList.append([alt,"Alternate word list created from "+os.path.basename(pwf)+" and "+os.path.basename(kmn)])
         
     else:
-        pwlf = cfg["pwLangFile"][:-4]+'.ods'
+        print('**')
+        pwlf = cfg["pwLangFile"]   #[:-4]+'.csv'
         fileList.append([pwlf, "primary words dictionary for given language"])
-        pwlf = cfg["pwLangFile"][:-4]+'.csv'
-        fileList.append([pwlf, "primary words dictionary for given language"])
-        #fileList.append(["", "generated from the "+cfg["trlangFile"]])
+        altlf = cfg["langAltCsv"]   #[:-4]+'.csv'
+        if altlf:
+            fileList.append([altlf, "alternate words dictionary for given language"])
         fileList.append([cfg["csv2kmnFile"], "kmn file generated from merging "+cfg["pwFile"]+ "and "+cfg["pwLangFile"]])
         
+        spacesFn = "name_has_spaces_"+cfg["alias"]+".txt"
+        exists = os.path.exists(spacesFn)
+        if exists:
+            fileList.append([spacesFn, "Diagnostic file listing words containing spaces"])
+
+        missingFn = "name_is_missing_"+cfg["alias"]+".txt"
+        exists = os.path.exists(missingFn)
+        if exists:
+            fileList.append([missingFn, "Diagnostic file listing missing words"])
+
     fileList.append([cfg["backFont"]+".sfd", "Fontforge file created from "+cfg["pwFile"]])
     fileList.append([cfg["backFont"]+".ttf", "ttf file created from "+cfg["backFont"]+".sfd"])
     fileList.append([cfg["backFont"]+".woff", "woff file created from "+cfg["backFont"]+".sfd"])
     fileList.append([cfg["compactFile"], "Primary Dictionary in compact form for printing with less paper"])
-    #fileList.append([cfg["synxref"], "Cross reference including synonyms and image contents"])
     fileList.append([cfg["back2doc"], "All the words printed from the backfont for verification"])
     fileList.append([cfg["readMe"], "This File"])
     
@@ -114,13 +125,12 @@ def main(*ffargs):
     curdir = os.getcwd()
     try:
         cfg = readCfg()
-        #removeFiles = cfg["debug"]
-        
+   
         # change to dist directory to so zip file won't have sub directory
-
         os.chdir('dist')
         fileList = createFileList(cfg)
         #logging.info('createlist %s', rc)
+        print(fileList)
         if fileList:
             rc = createReadMe(cfg,fileList)
             
