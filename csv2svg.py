@@ -42,20 +42,36 @@ def makeSVG(fontName, uniName, name, alias, debug):
             name = '?'
             logging.info('generating ? as questionmark')
             
+        if uniName == 'ee01':
+            name = ','
+            logging.info('generating , comma')
+        if uniName == 'ee02':
+            name = '!'
+            logging.info('generating ! explamation point')
+        if uniName == 'ee03':
+            #name ='""'
+            name ="'""'"
+            logging.info('generating " quotation mark')
+        if uniName == 'ee04':
+            name ="\'"
+            logging.info("generating ' single quote")
+        
         svgFile = "Svg\\"+alias+"_"+uniName+".svg"
         pnmFile = "tmp.pnm"
-        #pattern = "Svg\\*_"+uniName+"+*.svg"
+
         if glob.glob(svgFile):
             logging.warning('file pattern %s alreadyexists',uniName)
             return 0
         exists = os.path.isfile(svgFile)
 
         if not exists or debug:
-            #cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+'"'+name+'"'+" tmp.pnm"
-            cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+'"'+name+'"'+" "+pnmFile
-            logging.info('magick convert %s',cmd)
+            #cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+'"'+name+'"'+" "+pnmFile
+            #cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+name+" "+pnmFile
+            cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+name+" "+pnmFile
+            logging.info(cmd)
             try:
-                status = subprocess.call(cmd, shell=True)                #cmd = "potrace" +" --height 1.0 -s tmp.pnm -o "+'"'+svgFile+'"'
+                status = subprocess.call(cmd, shell=True) 
+                
                 cmd = "potrace" +" --height 1.0 -s "+pnmFile+" -o "+'"'+svgFile+'"'
                 logging.info('   potrace %s %s ',status, cmd)
                 if status == 0:

@@ -195,7 +195,21 @@ def read_list(font, csvFile, alias, namelist=""):
                         continue
                 #log_info(row[ixn], row[ixu], row[ixEN], ncol) 
                 unicode = row[ixu].lower()
-                name = row[ixn].strip().replace(" ","_")
+                if unicode == 'ee01':
+                    name = ','
+                    logging.info('generating , comma')
+                elif unicode == 'ee02':
+                    name = '!'
+                    logging.info('generating ! explamation point')
+                elif unicode == 'ee03':
+                    #name ='""'
+                    name ="'""'"
+                    logging.info('generating " quotation mark')
+                elif unicode == 'ee04':
+                    name ="\'"
+                    logging.info("generating ' single quote")
+                else:
+                    name = row[ixn].strip().replace(" ","_")
                 addFont(font, unicode, alias, name)   #, float(mn), float(mx))
 
     except Exception as  e:
