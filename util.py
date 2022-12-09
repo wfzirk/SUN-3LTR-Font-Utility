@@ -42,12 +42,12 @@ def lineno():
     return inspect.currentframe().f_back.f_lineno
     
 
-def getUnicode(str):
+def getUnicode(_str):
     try:
-        a = chr(int(str,16)).encode('utf-8')
+        a = chr(int(_str,16)).encode('utf-8')
         return a.decode('utf-8')
     except Exception as  e:
-        logging.error("fatal error getUnicode %s",e)
+        logging.error("fatal error getUnicode %s input %s",e, _str)
         sys.exit(1)
         
 def unicode2hex(uic): 
@@ -55,6 +55,7 @@ def unicode2hex(uic):
     return(hex(ord(uic)))
    
 def convertfiletype(filename):
+    print('filename', filename)
     lExt = filename.split(".")[1]
     if lExt == 'csv':
        

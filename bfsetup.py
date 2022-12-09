@@ -41,7 +41,7 @@ ISO 639-2 Code,	ISO 639-1 Code,	English name of Language,	French name of Languag
 #import sys
 
 def get_langlist(lb_entry, csv_file):
-    #print('get_langlist')
+    print('get_langlist')
     csv_file = cfg["language_codes"]
     ALIASCOL = 0    # col 0 = 3 letter alias,  col 1 = 2 letter alias
     if ALIASCOL ==1:
@@ -85,21 +85,31 @@ def updateVars():
     else:
         enState = 'disabled'
         laState = 'normal'
+        
     ttfName = os.path.basename(cfg["ttf"])
     ttf.delete(0, tk.END)
     ttf.insert(0, ttfName)
+    
     sfdName = os.path.basename(cfg["sfdFile"])
     sfd.delete(0, tk.END)
     sfd.insert(0, sfdName)
     sfd.configure(state=enState)
+    
     kmnName = os.path.basename(cfg["kmnFile"])
     kmn.delete(0, tk.END)
     kmn.insert(0, kmnName)
-    kmn.configure(state=enState)
+    #kmn.configure(state=enState)
+    
     trlName = os.path.basename(cfg["trlangFile"])
     trl.delete(0, tk.END)
     trl.insert(0, trlName)
     trl.configure(state=laState)
+    
+    bfName = os.path.basename(cfg["backFont"])
+    bfont.delete(0, tk.END)
+    bfont.insert(0, bfName)
+    bfont.configure(state='disabled')
+    
     altName = os.path.basename(cfg["langAltFile"])
     alt.delete(0, tk.END)
     alt.insert(0, altName)
@@ -120,14 +130,17 @@ def versionClicked(e):
     sv = e0.get()
     b = sv
     cfg["version"] = sv
-    print('versionclicked',sv, cfg["version"])
+    #print('versionclicked',sv, cfg["version"])
     updateVars()
-    
-def xefltrClicked(e):
-    cfg["eFilter"] = efltr.get()
-    updateCfg(cfg)
-        
-    
+ 
+def lb_entrylicked(e):
+    print('lb_entryClicked')
+
+'''    
+def _aliasClicked(e):
+    print("_aliasclicked")
+    _alias.delete(0,tk.END)        
+'''    
 def ttfClicked(e):
     cfg["ttf"] = filedialog.askopenfilename(filetypes = (("Text files","*.ttf"),("all files","*.*")))
     updateVars()
@@ -135,18 +148,28 @@ def ttfClicked(e):
 def sfdClicked(e):
     if cfg["alias"] == "ENG":
         cfg["sfdFile"] = filedialog.askopenfilename(filetypes = (("Text files","*.sfd"),("all files","*.*")))
-        updateVars()
+        #cfg["kmnFile"] = ""
+    else:
+        cfg["sfdFile"] = ""
+    updateVars()
     
 def kmnClicked(e):
-    if cfg["alias"] == "ENG":
-        cfg["kmnFile"] = filedialog.askopenfilename(filetypes = (("Text files","*.kmn"),("all files","*.*")))
-        updateVars()
+    #if cfg["alias"] == "ENG":
+    cfg["kmnFile"] = filedialog.askopenfilename(filetypes = (("Text files","*.kmn"),("all files","*.*")))
+    cfg["trlangFile"] = ""
+    #cfg["sfdFile"] = ""
+    #cfg["backFont"]
+    updateVars()
+        
     
 def trlClicked(e):
-    if cfg["alias"] != "ENG":
-        spread_exts = r"*.xlsx *.ods *.csv"
-        cfg["trlangFile"] = filedialog.askopenfilename(filetypes = (("SpreadSheets",spread_exts),("all files","*.*")))
-        updateVars()
+    #if cfg["alias"] != "ENG":
+    spread_exts = r"*.xlsx *.ods *.csv"
+    cfg["trlangFile"] = filedialog.askopenfilename(filetypes = (("SpreadSheets",spread_exts),("all files","*.*")))
+    cfg["kmnFile"]  = ""
+    cfg["sfdFile"] = ""
+    #cfg["backFont"] 
+    updateVars()
     
 def altClicked(e):
     if cfg["alias"] != "ENG":
@@ -171,6 +194,7 @@ class srchListBox(tk.Frame):
     def __init__(self, master, lboxList):
         tk.Frame.__init__(self, master)
         self.lboxList = lboxList
+        print('srchlistbox clicked')
         #self.pack()
         self.grid(row=1, column = 1, sticky=tk.W)
         self.create_widgets()
@@ -185,7 +209,8 @@ class srchListBox(tk.Frame):
         self.entry.grid(row=0, column=0, padx=10, pady=3)
         self.lbox.grid(row=1, column=0, padx=10, pady=3)
         self.lbox.bind("<<ListboxSelect>>", self.langClicked)
-        self.entry.bind("<Escape>", self.clearEntry)        
+        self.entry.bind("<Escape>", self.clearEntry)    
+        self.entry.bind("<1>", self.clearEntry)         
         scrollbar = tk.Scrollbar(lb_frame, orient="vertical", command=self.lbox.yview)
         self.lbox.configure(yscrollcommand=scrollbar.set)
         scrollbar.grid(row=1, column=2, sticky='ns')
@@ -204,6 +229,7 @@ class srchListBox(tk.Frame):
                     self.lbox.insert(tk.END, item)
     
     def clearEntry(self, *args):
+        print('clearentry')
         self.search_var.set("")
         
     def langClicked(self, event):
@@ -213,7 +239,7 @@ class srchListBox(tk.Frame):
             aar,                	aa,                     	Afar,                                           	afar,                       	Danakil-Sprache	          
         '''
         selection = event.widget.curselection()
-        #print('langclicked',selection)
+        print('langclicked',selection)
         if selection:
             index = selection[0]
             data = event.widget.get(index)
@@ -222,7 +248,9 @@ class srchListBox(tk.Frame):
             cfg["alias"] = lb_entry[data]
             _alias.delete(0, tk.END)
             _alias.insert(0, lb_entry[data])
-            
+            if data == "ENG":
+                 trl.delete(0, tk.END)
+            bfont.delete(0, tk.END)
         else:
             self.search_var.set("")
         updateVars()
@@ -268,11 +296,13 @@ tk.Label(center, bg='lightgreen', text="i.e. ENG", anchor=tk.W).grid(row=row, co
 csv_file = ('Language Codes.csv') 
 lb_entry= get_langlist(lb_entry, csv_file)
 lbs = srchListBox(lb_frame, lb_entry)
+lbs.bind("<1>", lb_entrylicked)
 
 lbl2 = tk.Label(center, bg='lightblue', text="Alias",width=4, anchor=tk.W)
 lbl2.grid(row=row, column=3, sticky=tk.E)
-_alias = tk.Entry(center,bg='lightyellow', width=8)
+_alias = tk.Entry(center,bg='lightblue', width=8)
 _alias.grid(row=row, column=4, sticky=tk.W)
+#_alias.bind("<1>", _aliasClicked)
 
 row = row+2
 lbl3a = tk.Label(center, bg='lightblue', text="Font File", width=8, anchor=tk.W)
@@ -320,6 +350,14 @@ trl.grid(column=1, row=row, sticky=tk.W, columnspan=4 )
 
 trl.bind("<1>", trlClicked)
 tk.Label(center, bg='lightblue', text="Tr...Dict...xxx.ods",  anchor=tk.W).grid(row=row, column=3, columnspan=2, sticky=tk.W)
+
+#Back Font
+row = row+1
+lbl7 = tk.Label(center, bg='lightblue', text="BackFont")
+lbl7.grid(column=0, row=row, sticky=tk.W, columnspan=1)
+bfont = tk.Entry(center,width=22)
+bfont.grid(column=1, row=row, sticky=tk.W, columnspan=4 )
+
 
 cncl = tk.Button(btm_frame, text = "Cancel") 
 cncl.pack(side=tk.RIGHT)

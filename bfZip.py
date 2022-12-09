@@ -40,38 +40,83 @@ def createFileList(cfg):
         fileList.append([kmn,"Complete dictionary created from "+os.path.basename(cfg["kmnFile"])])
         alt = cfg["altcsv"][:-4]+'.csv'
         fileList.append([alt,"Alternate word list created from "+os.path.basename(pwf)+" and "+os.path.basename(kmn)])
+        fileList.append([cfg["backFont"]+".sfd", "Fontforge file created from "+cfg["pwFile"]])
+    
         
     else:
         print('**')
-        pwlf = cfg["pwLangFile"]   #[:-4]+'.csv'
-        fileList.append([pwlf, "primary words dictionary for given language"])
+        for r in cfg:
+            print(r,  cfg[r])
+        #pwlf = cfg["pwLangFile"]   #[:-4]+'.csv'
+        #fileList.append([pwlf, "primary words dictionary for given language"])
+        logging.info(cfg["kmnFile"])
+        if cfg["kmnFile"]:
+            kmnFile =  cfg["kmnFile"]
+            fileList.append([kmnFile, "Source file for generating backfont"])
+            cpstr = kmnFile+'  '+os.getcwd()
+            cpstr = cpstr.replace('/', '\\')
+            logging.info('copy /y '+os.path.basename(kmnFile) )
+            os.system('copy /y '+cpstr)
+            
+            odsFile = "kmn"+cfg['version']+"_"+cfg['alias']+".ods"
+            fileList.append([odsFile, "Dictionary Generated from kmn file"])
+            
+            fileList.append([cfg["backFont"]+".sfd", "Fontforge file created from "+os.path.basename(kmnFile)])
+            logging.info("appending %s",os.path.basename(kmnFile)+".sfd")
+
+        elif cfg["trlangFile"]:
+            trlangFile = cfg["trlangFile"]
+            cpstr = trlangFile+'  '+os.getcwd()
+            cpstr = cpstr.replace('/', '\\')
+            logging.info('copy /y '+os.path.basename(trlangFile) )
+            os.system('copy /y '+cpstr)
+            fileList.append([trlangFile, "Source file for generating backfont"])
+            
+            fileList.append([cfg["backFont"]+".sfd", "Fontforge file created from "+os.path.basename(trlangFile) ])
+            logging.info("appending %s",os.path.basename(trlangFile) +".sfd")
+            
         altlf = cfg["langAltCsv"]   #[:-4]+'.csv'
         if altlf:
+            logging.info("appending %s",cfg["langAltCsv"])
             fileList.append([altlf, "alternate words dictionary for given language"])
-        fileList.append([cfg["csv2kmnFile"], "kmn file generated from merging "+cfg["pwFile"]+ "and "+cfg["pwLangFile"]])
-        
+                 
         spacesFn = "name_has_spaces_"+cfg["alias"]+".txt"
         exists = os.path.exists(spacesFn)
         if exists:
+            logging.info("appending %s",spacesFn)
             fileList.append([spacesFn, "Diagnostic file listing words containing spaces"])
 
         missingFn = "name_is_missing_"+cfg["alias"]+".txt"
         exists = os.path.exists(missingFn)
         if exists:
+            logging.info("appending %s",missingFn)
             fileList.append([missingFn, "Diagnostic file listing missing words"])
+        
+        invalid_characters = 'invalid_characters_'+cfg["alias"]+'.txt'  
+        exists = os.path.exists(invalid_characters)
+        if exists:
+            logging.info("appending %s",invalid_characters)
+            fileList.append([invalid_characters, "Diagnostic file listing invalid characters"])
 
-    fileList.append([cfg["backFont"]+".sfd", "Fontforge file created from "+cfg["pwFile"]])
+        
+        
     fileList.append([cfg["backFont"]+".ttf", "ttf file created from "+cfg["backFont"]+".sfd"])
+    logging.info("appending %s",cfg["backFont"]+".ttf")
     fileList.append([cfg["backFont"]+".woff", "woff file created from "+cfg["backFont"]+".sfd"])
+    logging.info("appending %s",cfg["backFont"]+".woff")
     fileList.append([cfg["compactFile"], "Primary Dictionary in compact form for printing with less paper"])
+    logging.info("appending %s",cfg["compactFile"])
     fileList.append([cfg["back2doc"], "All the words printed from the backfont for verification"])
+    logging.info("appending %s",cfg["back2doc"])
     fileList.append([cfg["readMe"], "This File"])
-    
+    logging.info("appending %s",cfg["readMe"])
     # remove directory from filename
+
     for file in fileList:
         f = os.path.basename(file[0])
         file[0] = f 
         logging.info('f %s',f)
+
     return fileList
     
 
@@ -130,19 +175,13 @@ def main(*ffargs):
         os.chdir('dist')
         fileList = createFileList(cfg)
         #logging.info('createlist %s', rc)
-        print(fileList)
+        #print(fileList)
         if fileList:
             rc = createReadMe(cfg,fileList)
             
             if rc == 0:
                 rc = writeZip(cfg, fileList)
-            '''    
-            if rc == 0:
-                if removeFiles:
-                    # delete original files
-                    for file in fileList:
-                        os.remove(file[0])
-            '''
+
     except Exception as e:
         logging.exception('exception %s',e)
         rc = 1

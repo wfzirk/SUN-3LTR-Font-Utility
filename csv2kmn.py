@@ -57,7 +57,7 @@ def read_csv(f):
     cfg = rcfg["langColumns"]
     name_has_spaces = 'dist/name_has_spaces_'+rcfg["alias"]+'.txt'
     name_is_missing = 'dist/name_is_missing_'+rcfg["alias"]+'.txt'
-    
+    invalid_characters = 'dist/invalid_characters_'+rcfg["alias"]+'.txt'  
     ixu = cfg["index_unicode"]
     ixn = cfg["index_langName"]
     ixe = cfg["index_name"]
@@ -67,12 +67,15 @@ def read_csv(f):
     csvData = []
     nameError = False
     try:
-        with open(f, encoding='utf8', newline='') as csvfile, open(name_has_spaces, "w") as file_spc, open(name_is_missing, "w") as file_missing:
+        with open(f, encoding='utf8', newline='') as csvfile, open(name_has_spaces, "w") as file_spc, open(name_is_missing, "w") as file_missing, open(invalid_characters, "w") as invalid_chr:
+            
             data = list(csv.reader(csvfile))
             #logging.debug('data %d %d',len(data), len(data[1]))
             #logging.debug(cfg)
             cnt = 0
             for i in data:
+                print('iiii', i, cnt, len(i))
+                if len(i) < 5: continue
                 logging.info('%d |%s| %s %s %s', cnt, i[ixu],i[ixn], i[ixe], i[ixr])
                 unicode = i[ixu].lower().strip()
                 
@@ -87,6 +90,17 @@ def read_csv(f):
                     logging.warning(errStr)
                     file_missing.write(errStr+'\n')
                     continue
+                if chr(146) in name:
+                    """
+                    A potential problem with this test in chr(146) valid in other languages
+                    """
+                    logging.warning('Invalid char in name %s should be ord(233)',name)
+                    name = name.replace(chr(146), chr(233))
+                    #logging.info('fixed replace '+chr(146)+' with '+chr(233))  
+                    errStr = f"Invalid char {chr(146)} ord(146) in {unicode} {name} replaced with {chr(233)} ord(233)"
+                    logging.warning(errStr)
+                    invalid_chr.write(errStr+'\n')
+
                 ref = i[ixr].strip()
                 
                 if len(ref) == 0:

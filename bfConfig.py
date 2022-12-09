@@ -50,7 +50,7 @@ langParms = {\
 def updateCfg(cfg):
     #print('updatecfg',cfg["alias"], cfg["version"])
     cfg["pwFile"] = cfg["filePath"]+"pw"+cfg["version"]+"_ENG.csv"                      # this file must be the english base file
-    #cfg["pwLangFile"] = cfg["filePath"]+"pw"+cfg["version"]+"_"+cfg["alias"]+".csv"
+    
     basename = os.path.basename(cfg["trlangFile"])
     trlbase = basename.split('.')[0]+'.csv'
     if cfg["langAltFile"]:
@@ -107,14 +107,9 @@ def readCfg():
         rdcfg = json.load(open('config.json'))
         
         if bfVersion != rdcfg["bfVersion"]:
-            #rdcfg["bfVersion"] = bfVersion
-            #print('bfversion',bfVersion)
             dumpit = True
         for k in cfg:
-            #print(k)
-            #for j in k:
-            #    if j not in rdcfg:
-            #        dumpit = True
+
             if k not in rdcfg:
                 print(k,'not in rdcfg')
                 dumpit = True
@@ -123,7 +118,6 @@ def readCfg():
         dumpit = True
         
     if dumpit:
-        #print('dumpit')
         cfg["bfVersion"]=bfVersion
         json.dump(cfg, open('config.json', 'w'),  indent=4)     
         rdcfg = cfg
@@ -131,14 +125,24 @@ def readCfg():
     return rdcfg
 
 def writeBat(cfg):
-    batEnv = "set sfd="+cfg["sfdFile"]+"\n"\
+    batEnv = "@echo off\n"\
+        +"set sfd="+cfg["sfdFile"]+"\n"\
         +"set kmn="+cfg["kmnFile"]+"\n"\
         +"set ver="+cfg["version"]+"\n"\
         +"set ttffont="+cfg["ttf"]+"\n"\
         +"set alias="+cfg["alias"]+"\n"\
         +"set langaltin="+cfg["langAltFile"]+"\n"\
         +"set langin="+cfg["trlangFile"]+"\n"\
-        +"set langout=SUNBF"+cfg["version"]+"_"+cfg["alias"]+".sfd"
+        +"set langout=SUNBF"+cfg["version"]+"_"+cfg["alias"]+"\n"\
+        +"\n\n@echo off\n"\
+        +"@echo sfd file: \t%sfd%\n"\
+        +"@echo kmn file: \t%kmn%\n"\
+        +"@echo version: \t%ver%\n"\
+        +"@echo ttffont: \t%ttffont%\n"\
+        +"@echo alias: \t\t%alias%\n"\
+        +"@echo langaltin: \t%langaltin%\n"\
+        +"@echo langin: \t%langin%\n"\
+        +"@echo langout: \t%langout%"
 
     f = open('doEnv.bat', 'w')
     f.write(batEnv) 

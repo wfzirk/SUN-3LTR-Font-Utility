@@ -42,36 +42,20 @@ def makeSVG(fontName, uniName, name, alias, debug):
             name = '?'
             logging.info('generating ? as questionmark')
             
-        if uniName == 'ee01':
-            name = ','
-            logging.info('generating , comma')
-        if uniName == 'ee02':
-            name = '!'
-            logging.info('generating ! explamation point')
-        if uniName == 'ee03':
-            #name ='""'
-            name ="'""'"
-            logging.info('generating " quotation mark')
-        if uniName == 'ee04':
-            name ="\'"
-            logging.info("generating ' single quote")
-        
         svgFile = "Svg\\"+alias+"_"+uniName+".svg"
         pnmFile = "tmp.pnm"
-
+        #pattern = "Svg\\*_"+uniName+"+*.svg"
         if glob.glob(svgFile):
             logging.warning('file pattern %s alreadyexists',uniName)
             return 0
         exists = os.path.isfile(svgFile)
 
         if not exists or debug:
-            #cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+'"'+name+'"'+" "+pnmFile
-            #cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+name+" "+pnmFile
-            cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+name+" "+pnmFile
-            logging.info(cmd)
+            #cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+'"'+name+'"'+" tmp.pnm"
+            cmd = "magick convert" + " -font "+fontName+" -pointsize 72 label:"+'"'+name+'"'+" "+pnmFile
+            logging.info('magick convert %s',cmd)
             try:
-                status = subprocess.call(cmd, shell=True) 
-                
+                status = subprocess.call(cmd, shell=True)                #cmd = "potrace" +" --height 1.0 -s tmp.pnm -o "+'"'+svgFile+'"'
                 cmd = "potrace" +" --height 1.0 -s "+pnmFile+" -o "+'"'+svgFile+'"'
                 logging.info('   potrace %s %s ',status, cmd)
                 if status == 0:
@@ -168,7 +152,8 @@ def main(*ffargs):
         args.append(a)
         
 
-    if len(args) > 2: 
+    if len(args) > 2:
+        print('args', args[1])
         csvFile = convertfiletype(args[1])
         ttfFont = args[2].lower()
         namelist = ""

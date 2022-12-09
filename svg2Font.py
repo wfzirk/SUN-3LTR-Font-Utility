@@ -31,30 +31,37 @@ ffMetrics = {}  # font metrics taken from font
 '''
 
 def getWord(word):
+    #logging.info(word)
     maxt = 0
     minb = 0
     ww = []
-    for w in word:
-        g = ffMetrics["ttfFont"][ord(w)]
-        name = g.glyphname
-        left, bot, right, top = g.boundingBox()
-        name = g.glyphname
-        ww = [bot, top]
-        b = ww[0]
-        t = ww[1]
-        if b < minb:
-            minb = b
-        if t > maxt:
-            maxt = t
+    try:
+        for w in word:
+            g = ffMetrics["ttfFont"][ord(w)]
+            #logging.info(g.glyphname)
+            #name = g.glyphname
+            left, bot, right, top = g.boundingBox()
+            #name = g.glyphname
+            ww = [bot, top]
+            b = ww[0]
+            t = ww[1]
+            if b < minb:
+                minb = b
+            if t > maxt:
+                maxt = t
 
-    #log_info('getWord %20s \t%s \t%s'%(word, minb, maxt))
-    #sys.stdout.flush() 
+        logging.info('getWord %s \t%s \t%s',word, minb, maxt)
+    except Exception as e:
+            logging.exception('exception %s name:%s ord:%s word:%s min:%s max:%s',e, w, ord(w), word, minb, maxt)
+            #traceback.print_exc()
+            return(1)
     return minb, maxt
 
 
 def scale(glyph):   #, wordMin, wordMax):
     global desc_scale
     wordMin, wordMax = getWord(glyph.glyphname)
+    logging.info(glyph)
     printBound(glyph,'Image Size')
     iL, iB, iR, iT = glyph.boundingBox()
 
@@ -78,22 +85,23 @@ def scale(glyph):   #, wordMin, wordMax):
     base_matrix = psMat.translate(0, y)
     glyph.transform(base_matrix)
     #log_info('move y: %s bot: %s desc:%s'%(round(y,2), round(sB,2), round((wordMin*s),2)))
-    logging.debug('move y: %5.2f bot: %5.2f desc:%5.2f', y, sB, (wordMin*s))
+    logging.info('move y: %5.2f bot: %5.2f desc:%5.2f', y, sB, (wordMin*s))
     printBound(glyph,'Moved ')
  
 def printBound(glyph, comment = ""):
     left, bot, right, top = glyph.boundingBox()
     #log_info(comment,'bound height:', round((top-bot),2), 'bot:',round(bot,2), 'top:',round(top,2), 'width:',round((right-left),2),'lb:',round(glyph.left_side_bearing,2), 'rb:',round(glyph.right_side_bearing,2))
-    logging.debug('%s bound height: %5.2f bot: %5.2f top:%5.2f width:%5.2f lb:%5.2f rb:%5.2f', comment, (top-bot), bot, top, (right-left), glyph.left_side_bearing, glyph.right_side_bearing)
+    logging.info('%s bound height: %5.2f bot: %5.2f top:%5.2f width:%5.2f lb:%5.2f rb:%5.2f', comment, (top-bot), bot, top, (right-left), glyph.left_side_bearing, glyph.right_side_bearing)
    
 def setBearing(glyph):
+    #logging.info(glyph)
     left, bot, right, top = glyph.boundingBox()
     
     glyph.width = int(right) - int(left) + 150
     glyph.left_side_bearing = 75
     glyph.right_side_bearing = 75
     #log_info('bearing', round(glyph.left_side_bearing,2), round(glyph.right_side_bearing,2), round(right-left, 2))
-    logging.debug('bearing left:%5.2f right:%5.2f width:%5.2f', glyph.left_side_bearing, glyph.right_side_bearing, (right-left))
+    logging.info('bearing left:%5.2f right:%5.2f width:%5.2f', glyph.left_side_bearing, glyph.right_side_bearing, (right-left))
     
 def addFont(font, unicode, alias, imagename):  #, mn, mx) :
     
@@ -119,7 +127,7 @@ def addFont(font, unicode, alias, imagename):  #, mn, mx) :
             exists = os.path.isfile(file)
             if exists:
                 #logging.info("------------------------------------")
-                logging.debug('addFont file %s %s %s', file, unicode, imagename)
+                logging.info('addFont file %s %s %s', file, unicode, imagename)
                 
                 if unicode == -1:
                     glyph = font.createChar(-1, imagename)
@@ -133,7 +141,7 @@ def addFont(font, unicode, alias, imagename):  #, mn, mx) :
                 logging.warning("file %s does not exist", file)
                 return(2)
         except Exception as e:
-            logging.exception('exception %s',e)
+            logging.exception('exception %s file:%s  unicode:%s',file,e, unicode)
             #traceback.print_exc()
             return(1)
        
@@ -180,9 +188,12 @@ def read_list(font, csvFile, alias, namelist=""):
     try:
         with open(csvFile, encoding='utf8') as csvDataFile:
             csvReader = csv.reader(csvDataFile, delimiter=',', quotechar ='"') 
+            cnt = 0
             for row in csvReader:
+  
                 if (len(row) < 3) or (len(row[ixu])) != 4: 
-                    logging.info('row wrong length row len %s  unicode len %s',len(row),len(row[ixu]))
+                    logging.info('row %d wrong length row len %s  unicode len %s', cnt,len(row),len(row[ixu]))
+                    cnt+=1
                     continue
                 ncol = len(row)
                 unicode = row[ixu].lower()
@@ -195,23 +206,10 @@ def read_list(font, csvFile, alias, namelist=""):
                         continue
                 #log_info(row[ixn], row[ixu], row[ixEN], ncol) 
                 unicode = row[ixu].lower()
-                if unicode == 'ee01':
-                    name = ','
-                    logging.info('generating , comma')
-                elif unicode == 'ee02':
-                    name = '!'
-                    logging.info('generating ! explamation point')
-                elif unicode == 'ee03':
-                    #name ='""'
-                    name ="'""'"
-                    logging.info('generating " quotation mark')
-                elif unicode == 'ee04':
-                    name ="\'"
-                    logging.info("generating ' single quote")
-                else:
-                    name = row[ixn].strip().replace(" ","_")
+                name = row[ixn].strip().replace(" ","_")
                 addFont(font, unicode, alias, name)   #, float(mn), float(mx))
-
+                cnt+=1
+                
     except Exception as  e:
         logging.exception("fatal error read_list %s",e)
         #traceback.print_exc()
@@ -249,20 +247,24 @@ def main(*ffargs):
     logging.info('version %s', bfVersion)
     args = []
     for a in ffargs[0]:
-        logging.debug(a)
+        logging.info(a)
         args.append(a)
         
     rc = 0
+    print(len(args))
+    print(args[1])
+    print(args[2])
+    print(args[3])
+    #print(args[4])
+    
+    #svg2Font.py %langin% %ttffont% %alias% dist/SUNBF%ver%_%alias%
     if len(args) > 4: 
         try:
             csvFile = convertfiletype(args[1])
             ttfFile = args[2]
             alias = args[3].upper()
-            #backFont = args[4].split('.')[0]
-            #backFont = args[4][:-4]+'_'+alias
             backFont = args[4]
             logging.info('arg4 %s',backFont)
-            #ttfFont = fontforge.open(ttfFile) 
             ttfFont = ff.open(ttfFile)
             getMetrics(ttfFile, ttfFont)
             font = createFont(backFont)     #, ver, section)
@@ -315,7 +317,7 @@ def main(*ffargs):
         rc = 1
         
     if rc == 0:
-        logging.info('\nDone saved font files in %s .ttf |.woff |.sfd', backFont)
+        logging.info('Done saved font files in %s .ttf |.woff |.sfd', backFont)
     else:
         logging.error('Failed %d',rc)
     

@@ -7,7 +7,7 @@ import logging.handlers
 
 
 def log_setup(file, level=logging.INFO):
-    print(type(file), file) 
+    print(file) 
     name = "Log/"+os.path.basename(file)
     
     #should_roll_over = name
@@ -16,8 +16,9 @@ def log_setup(file, level=logging.INFO):
     #if should_roll_over:  # log already exists, roll over!
     #    log_handler.doRollover()
 
-    formatter = logging.Formatter('%(asctime)s %(levelname)6s %(module)8s:%(lineno)d - %(message)s')  
-
+    #formatter = logging.Formatter('%(asctime)s %(levelname)6s %(module)8s:%(lineno)d - %(message)s')  
+    formatter = logging.Formatter('%(asctime)s,%(levelname)6s,%(module)8s,%(funcName)8s:,%(lineno)d-,%(message)s')  
+    
     log_handler.setFormatter(formatter)
     
     logger = logging.getLogger()
