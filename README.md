@@ -1,4 +1,4 @@
-﻿**Instructions for FontForge scripts as of SUN version 921\_722**
+**Instructions for FontForge scripts as of SUN version 921\_722**
 
 22 July 2021
 
@@ -189,6 +189,8 @@ set langout=SUNBF220225\_POR.sfd
 This batch file will generate all files and documents into a complete package.
 
 `		`It can also by  passing the python file name execute only that one file.
+
+**Language Lists** – Iso639 language lists can be downloaded and to get the 3 or 4 letter  		acronym for the language used.  If English (ENG) then primary word lists will be 		generated as well as a backfont requiring a kmn file and a dictionary.  If other 		than English then either a kmn file or a dictionary file is required to generate the 		backfont.
 
 `	`**config.json** – This contains variables and lists  for each language and may 				eventually be rewritten as more languages are built.
 
