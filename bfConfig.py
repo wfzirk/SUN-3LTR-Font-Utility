@@ -9,6 +9,8 @@ bfVersion = version.get_version()
 
 cfg = { 
     "bfVersion":"",
+    "iso639":"iso-639-3.tab",
+    "iso639sub":"iso639SubList.tab",               
     "filePath": "dist/",
     "version": "",
     "alias": "",

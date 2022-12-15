@@ -1,12 +1,12 @@
 @echo off
-set sfd=
-set kmn=
-set ver=_test_
-set ttffont=D:/Documents/WA-SUN/Scripts/SFU22_02_25_langTest/Input/times.ttf
-set alias=FRA
+set sfd=D:/Documents/WA-SUN/Scripts/SUN-3LTR-Font-Utility-2.11/Input/Sun22_02_25.sfd
+set kmn=D:/Documents/WA-SUN/Scripts/SUN-3LTR-Font-Utility-2.11/Input/sun22_08_1-FRAA.kmn
+set ver=-test-
+set ttffont=D:/Documents/WA-SUN/Scripts/SUN-3LTR-Font-Utility-2.11/Input/times.ttf
+set alias=FRAA
 set langaltin=
-set langin=D:/Documents/WA-SUN/Scripts/SFU22_02_25_langTest/Input/kmn_dictionary-FRA.ods
-set langout=SUNBF_test__FRA
+set langin=
+set langout=SUNBF-test-_FRAA
 
 
 @echo off
