@@ -27,6 +27,7 @@ Requirements:
 - execute fontforge-console
 - execute ffpython -m pip install --upgrade pip --force-reinstall
 - execute pip install xlsxwriter
+-  execute ffpython -m pip install xlsxwriter
 
 - (not implemented yet) For creating pdf files with the fonts created by Fontforge, then the font needs to be loaded into the workdirectory.   [Fontloader](https://www.trishtech.com/2018/11/load-fonts-temporarily-in-windows-through-command-line-interface/) has a cli version that loads fonts temporally into windows.  It can be downloaded here [Fontloader download](https://www.trishtech.com/downloads/fontloader-command-line.zip).
 
